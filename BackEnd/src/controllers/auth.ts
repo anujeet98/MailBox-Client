@@ -2,7 +2,9 @@ import { Request, Response, NextFunction } from 'express';
 
 const signup = (req: Request, res: Response) => {
     try{
-        throw new Error('test');
+        // const {email:string, password:string} = req.body;
+        // console.log(email, password);   
+        res.status(200).json({message: 'success'});
     }
     catch(err){
         console.log(err);
