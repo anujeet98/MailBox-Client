@@ -47,7 +47,7 @@ export default authSlice.reducer;
 
 
 export const authThunk = (authType: boolean, authobj: AuthObject) => {
-    return async(dispatch: Dispatch) => {
+    return async(dispatch: Dispatch<any>) => {
         try{
             const res = await fetch(`http://localhost:4000/auth/${authType ? 'signin': 'signup'}`,{
                 method: 'POST',
@@ -63,7 +63,7 @@ export const authThunk = (authType: boolean, authobj: AuthObject) => {
 
             const resData: AuthRes = await res.json();
             localStorage.setItem('mailclienttoken', resData.idToken);
-            // dispatch(login(resData));
+            dispatch(login(resData));
         }
         catch(err){
             throw err;

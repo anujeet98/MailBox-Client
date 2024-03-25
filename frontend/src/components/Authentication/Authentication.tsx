@@ -4,6 +4,7 @@ import { Button, Form} from "react-bootstrap";
 import classes from './Authentication.module.css';
 import { NavLink, useNavigate } from "react-router-dom";
 import { authThunk } from "../../store/authSlice";
+import { useSelector } from "react-redux";
 
 const validateForm = (email:string, password:string, confirmPassword:string, isSignIn:boolean) => {
     if(email.trim()==='' || !/\S+@\S+\.\S+/.test(email)){
@@ -29,7 +30,7 @@ const Authentication = () => {
     const [isSignIn, setIsSignIn] = useState(true);
     const navigate = useNavigate();
     const dispatch = useDispatch<any>(); 
-    console.log();
+    const stateValue = useSelector(state => state);
 
 
     const AuthHandler = async(e:FormEvent<HTMLFormElement>) => {
@@ -50,12 +51,11 @@ const Authentication = () => {
                 cnfPasswordRef.current && (cnfPasswordRef.current.value='');
             navigate('/home');
         }
-        catch(err){
-            console.log(err); 
-            // alert(err);
+        catch(err: any){
+            if(err)
+                alert(err.message);
         }
     }
-
     return (
         <div className={classes.authContainer}>
             <Form onSubmit={(e)=>AuthHandler(e)} className={classes.auth + " shadow rounded-2 d-flex flex-column gap-2 border border-2 rounded-2  pt-4 pb-5 px-3 mb-4 "}>
