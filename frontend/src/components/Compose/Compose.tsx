@@ -3,6 +3,7 @@ import { Container, Form, Button } from 'react-bootstrap';
 import MailEditor from './MailEditor';
 import { EditorState } from 'draft-js';
 import { useSelector } from 'react-redux';
+import axios from 'axios';
 interface AuthRes {
     email: string,
     idToken: string,
@@ -16,21 +17,50 @@ interface AuthState {
     }
 }
 
+const validateEmail = (email: string) => {
+    if(email.trim()==='' || !/\S+@\S+\.\S+/.test(email)){
+        return false;
+    }
+    return true;
+}
+
 function Compose() {
     const [isSending, setIsSending] = useState(false);
     const [editorState, setEditorState] = useState(EditorState.createEmpty());
     const toRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
     const subjectRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
     const senderEmail = useSelector((state: AuthState) => state.auth.userData?.email);
+    const userAuthToken = useSelector((state: AuthState) => state.auth.token);
 
-    const formSubmit = (event: FormEvent) => {
+    const formSubmit = async(event: FormEvent) => {
         event.preventDefault();
         setIsSending(true);
         const toEmail = toRef.current?.value;
         const subject = subjectRef.current?.value;
         const mailBody = editorState.getCurrentContent().getPlainText();
-        console.log(senderEmail);
+        if(!validateEmail(toEmail as string))
+            return alert('Invalid email');
+        if(toEmail === senderEmail)
+            return alert('Cannot send mail to user\'s email id');
+        if(subject?.trim()==='')
+            return alert('Subject is empty');
 
+        const mailObj = {
+            recepient: toEmail,
+            sender: senderEmail,
+            subject: subject,
+            body: mailBody,
+        };
+        try{
+            const res = await axios.post('http://localhost:4000/mail/send', mailObj, { headers: {"Authorization": userAuthToken} });
+            alert('Email sent to the recipient.');
+        }
+        catch(err){
+            console.log(err);
+        }
+        finally{
+            setIsSending(false);
+        }
 
     }
     return (
