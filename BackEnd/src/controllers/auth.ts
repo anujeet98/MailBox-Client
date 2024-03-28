@@ -4,10 +4,16 @@ import jwt, { Secret } from 'jsonwebtoken';
 import userModel from '../models/users';
 import inputValidator from '../util/input-validator';
 import Cryptr from 'cryptr';
+import Users from '../models/users';
 const SECRET: Secret | undefined = process.env.JWT_AUTH_SECRET;
 const CRYPTR_SECRET: string = process.env.CRYPT_SECRET!;
 const cryptr = new Cryptr(CRYPTR_SECRET as string);
 
+interface authToken{
+    email: string,
+    expiresIn: string,
+    id: string,
+}
 
 const signup = async(req: Request, res: Response) => {
     try{
@@ -73,13 +79,35 @@ const signin = async(req: Request, res: Response) => {
 }
 
 
-const auth = (req: Request, res: Response) => {
+const auth = async(req: Request, res: Response) => {
     try{
-        throw new Error('test');
-    }
-    catch(err){
-        console.log(err);
-        res.status(500).json({error: 'SIGN-UP-ERROR', message: 'something went wrong during signup'});
+        const token: string | undefined = req.headers.authorization;
+        if (!token) {
+            return res.status(401).json({ message: 'No token, authorization denied' });
+        }
+        const userData = jwt.verify(token as string, process.env.JWT_AUTH_SECRET as string) as authToken;
+        const userId = cryptr.decrypt(userData.id);
+        const verifiedUser = await Users.findById(userId);
+        if(verifiedUser){
+            const expirationTimeInSeconds = 3600;
+            const tokenExpiry = Math.floor(Date.now() / 1000) + expirationTimeInSeconds;
+            if(!SECRET)
+                throw new Error('undefined JWT secret');
+            const encryptId = cryptr.encrypt(verifiedUser._id.toString());
+            return res.status(201).json({ email: verifiedUser.email, expiresIn: tokenExpiry, idToken: jwt.sign({email: verifiedUser.email, expiresIn: tokenExpiry, id: encryptId}, SECRET) });
+        }
+        else{
+            return res.status(401).json({ error: 'User not found. \nPlease sign in again' });
+        }
+    }   
+    catch(err: any){
+        if(err && err.name === 'JsonWebTokenError')
+            return res.status(401).json({ error: 'User unauthorized', message: 'User unauthorized. \nPlease sign-in again'});
+        if(err && err.name === 'TokenExpiredError')
+            return res.status(401).json({error: 'Token expired', message: 'Authentication token expired. \nPlease sign in again'});
+
+        console.error('authenticationError: ', err);
+        res.status(500).json({error: err, message: "something went wrong"});
     }
 }
 
