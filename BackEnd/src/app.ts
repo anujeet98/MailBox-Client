@@ -4,6 +4,7 @@ import express from 'express';
 import cors from 'cors';
 import { Database } from './util/db';
 import authRoute from './routers/auth';
+import mailRoute from './routers/mail';
 
 const app: express.Application = express();
 const PORT: number = Number(process.env.PORT) | 4000;
@@ -13,6 +14,7 @@ app.use(express.json());
 
 
 app.use('/auth', authRoute);
+app.use('/mail', mailRoute);
 
 
 const startServer = async () => {

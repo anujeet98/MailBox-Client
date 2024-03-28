@@ -3,7 +3,10 @@ import bcrypt from 'bcrypt';
 import jwt, { Secret } from 'jsonwebtoken';
 import userModel from '../models/users';
 import inputValidator from '../util/input-validator';
+import Cryptr from 'cryptr';
 const SECRET: Secret | undefined = process.env.JWT_AUTH_SECRET;
+const CRYPTR_SECRET: string = process.env.CRYPT_SECRET!;
+const cryptr = new Cryptr(CRYPTR_SECRET as string);
 
 
 const signup = async(req: Request, res: Response) => {
@@ -28,7 +31,8 @@ const signup = async(req: Request, res: Response) => {
         const tokenExpiry = Math.floor(Date.now() / 1000) + expirationTimeInSeconds;
         if(!SECRET)
             throw new Error('Undefined JWT secret');
-        res.status(200).json({ email: email, expiresIn: tokenExpiry, idToken: jwt.sign({email: email, expiresIn: tokenExpiry, id: response._id}, SECRET) });
+        const encryptId = cryptr.encrypt(response._id.toString());
+        res.status(200).json({ email: email, expiresIn: tokenExpiry, idToken: jwt.sign({email: email, expiresIn: tokenExpiry, id: encryptId}, SECRET) });
     }
     catch(err){
         console.log(err);
@@ -54,7 +58,8 @@ const signin = async(req: Request, res: Response) => {
                 const tokenExpiry = Math.floor(Date.now() / 1000) + expirationTimeInSeconds;
                 if(!SECRET)
                     throw new Error('undefined JWT secret');
-                return res.status(201).json({ email: email, expiresIn: tokenExpiry, idToken: jwt.sign({email: email, expiresIn: tokenExpiry, id: user._id}, SECRET) });
+                const encryptId = cryptr.encrypt(user._id.toString());
+                return res.status(201).json({ email: email, expiresIn: tokenExpiry, idToken: jwt.sign({email: email, expiresIn: tokenExpiry, id: encryptId}, SECRET) });
             }
             return res.status(401).json({error: 'INCORRECT-PASSWORD', message: 'Incorrect user password'});
         }
