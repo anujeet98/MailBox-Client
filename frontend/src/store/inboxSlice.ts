@@ -34,12 +34,16 @@ const inboxSlice: Slice<inbox> = createSlice({
         },
         setInbox(state, action){
             state.mails = action.payload;
+        },
+        deleteInboxMail(state, action){
+            const updatedMailList = state.mails.filter(mail => mail._id !== action.payload);
+            state.mails = updatedMailList;
         }
     }
 
 })
 
-export const { updateMailStatusRead, setInbox } = inboxSlice.actions;
+export const { updateMailStatusRead, setInbox, deleteInboxMail } = inboxSlice.actions;
 export default inboxSlice.reducer;
 
 
@@ -63,12 +67,29 @@ export const readStatusUpdateThunk = (token: string, id: string) => {
 export const getInboxThunk = (token: string) => {
     return async(dispatch: Dispatch<any>) => {
         try{
-            const res: AxiosResponse<inboxResult> = await axios.get('http://localhost:4000/mail/inbox',{
+            const res: AxiosResponse<inboxResult> = await axios.get(`http://localhost:4000/mail/inbox`,{
                 headers: {
                     Authorization: token
                 }
             });
             dispatch(setInbox(res.data.mails));
+        }
+        catch(err: any){
+            throw err;
+        }
+    }
+};
+
+
+export const deleteInboxMailThunk = (token: string, id: string) => {
+    return async(dispatch: Dispatch<any>) => {
+        try{
+            const res: AxiosResponse<inboxResult> = await axios.delete(`http://localhost:4000/mail/inbox/${id}`,{
+                headers: {
+                    Authorization: token
+                }
+            });
+            dispatch(deleteInboxMail(id));
         }
         catch(err: any){
             throw err;

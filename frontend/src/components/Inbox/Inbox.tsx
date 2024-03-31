@@ -85,7 +85,7 @@ function Inbox() {
         <Container fluid className='d-flex p-0 min-vh-100 mt-3'>
             <ul className='list-unstyled w-100 '>
                 {
-                    mails.map(mail => <InboxItem data={mail} onSelectMail={()=>selectMailToDisplay(mail._id)}/>)
+                    mails.map(mail => <InboxItem key={mail._id} data={mail} onSelectMail={()=>selectMailToDisplay(mail._id)}/>)
                 }
             </ul>
         </Container>

@@ -1,5 +1,3 @@
-import axios from 'axios';
-import React from 'react'
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { readStatusUpdateThunk } from '../../store/inboxSlice';
@@ -39,10 +37,11 @@ function InboxItem(props: inboxItemProps) {
     const dispatch = useDispatch<any>();
 
     const showMail = async() => {
-        if(!props.data.isRead && token){
+        if(token){
             try{
                 props.onSelectMail();
-                await dispatch(readStatusUpdateThunk(token, props.data._id));
+                if(!props.data.isRead)
+                    await dispatch(readStatusUpdateThunk(token, props.data._id));
             }
             catch(err: any){
                 console.log(err);
@@ -54,9 +53,11 @@ function InboxItem(props: inboxItemProps) {
 
     return (
         <li className='border border-1 d-flex p-2 btn btn-light rounded-0 ' onClick={showMail}>
-                <div id="readStatus" className=''><i className={`ri-circle-fill ${isRead ? 'text-light' : 'text-success '} border rounded-5 border-3 `}></i></div>
+                <div id="readStatus" className=''>
+                    <i className={`ri-circle-fill ${isRead ? 'text-light' : 'text-success '} border rounded-5 border-3 `}></i>
+                </div>
                 <div className='d-flex flex-column '>
-                    <span className='fw-bold '>{props.data.sender}</span>
+                    <span className='fw-bold'>{props.data.sender}</span>
                     <div className='overflow-hidden '><span className='fw-bold me-2 '>{props.data.subject}</span> {props.data.body} </div>
                 </div>
                 <div className='ms-auto'>{emailDate.toISOString()}</div>
