@@ -3,7 +3,13 @@ import { Container, Form, Button } from 'react-bootstrap';
 import MailEditor from './MailEditor';
 import { EditorState } from 'draft-js';
 import { useSelector } from 'react-redux';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
+import { AxiosError } from 'axios';
+
+interface CustomError {
+  message: string,
+  response: AxiosResponse<string>,
+}
 interface AuthRes {
     email: string,
     idToken: string,
@@ -34,7 +40,6 @@ function Compose() {
 
     const formSubmit = async(event: FormEvent) => {
         event.preventDefault();
-        setIsSending(true);
         const toEmail = toRef.current?.value;
         const subject = subjectRef.current?.value;
         const mailBody = editorState.getCurrentContent().getPlainText();
@@ -46,22 +51,25 @@ function Compose() {
             return alert('Subject is empty');
 
         const mailObj = {
-            recepient: toEmail,
+            recipient: toEmail,
             sender: senderEmail,
             subject: subject,
             body: mailBody,
         };
         try{
+            setIsSending(true);
             const res = await axios.post('http://localhost:4000/mail/send', mailObj, { headers: {"Authorization": userAuthToken} });
             alert('Email sent to the recipient.');
-        }
-        catch(err){
-            console.log(err);
-        }
-        finally{
+            toRef.current!.value = '';
+            subjectRef.current!.value = '';
+            console.log(res.data.message);
+            setEditorState(EditorState.createEmpty());
             setIsSending(false);
         }
-
+        catch(err: any){
+            alert(err.response.data.message);
+            setIsSending(false);
+        }
     }
     return (
         <Container fluid className='py-3 px-4'>

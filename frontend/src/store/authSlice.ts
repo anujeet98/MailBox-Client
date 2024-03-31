@@ -1,4 +1,5 @@
 import { Slice, createSlice, Dispatch } from '@reduxjs/toolkit';
+import axios from 'axios';
 interface AuthObject {
     email: string,
     password: string,
@@ -26,9 +27,6 @@ const authSlice: Slice<AuthState> = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        // updateProfile(state, action){
-        //     state.userData = action.payload;
-        // },
         login(state, action){
             state.isLoggedIn = true;
             state.userData = action.payload;
@@ -64,6 +62,24 @@ export const authThunk = (authType: boolean, authobj: AuthObject) => {
             const resData: AuthRes = await res.json();
             localStorage.setItem('mailclienttoken', resData.idToken);
             dispatch(login(resData));
+        }
+        catch(err){
+            throw err;
+        }
+    }
+}
+
+
+export const authWithTokenThunk = (token: string) => {
+    return async(dispatch: Dispatch<any>) => {
+        try{              
+            const res: AuthRes = await axios.get('http://localhost:4000/auth/', {
+                'headers': {
+                    'Authorization': token,
+                }
+            });
+            localStorage.setItem('mailclienttoken', res.idToken);
+            dispatch(login(res));
         }
         catch(err){
             throw err;

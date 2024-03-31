@@ -24,6 +24,20 @@ export const send = async(req: Request, res: Response) => {
     }
     catch(err){
         console.log('SendMail-Error: ',err);
-        res.status(500).json({error: err, message: "something went wrong"})
+        res.status(500).json({error: err, message: "something went wrong while sending the email"});
+    }
+}
+
+
+export const inbox = async(req: Request, res: Response) => {
+    try{
+        const { user } = req.body;
+
+        const resp = await mailModel.find({recipient: user.email});
+        res.status(200).json({status: 200, mails: resp});
+    }
+    catch(err){
+        console.log('GetInbox-Error: ',err);
+        res.status(500).json({error: err, message: "something went wrong while fetchin the inbox"});
     }
 }
