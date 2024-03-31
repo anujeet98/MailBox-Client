@@ -30,7 +30,7 @@ const Authentication = () => {
     const [isSignIn, setIsSignIn] = useState(true);
     const navigate = useNavigate();
     const dispatch = useDispatch<any>(); 
-    const stateValue = useSelector(state => state);
+    // const stateValue = useSelector(state => state);
 
 
     const AuthHandler = async(e:FormEvent<HTMLFormElement>) => {
@@ -49,7 +49,7 @@ const Authentication = () => {
             passwordRef.current && (passwordRef.current.value = '');
             if(!isSignIn) 
                 cnfPasswordRef.current && (cnfPasswordRef.current.value='');
-            navigate('/home');
+            navigate('/home/inbox');
         }
         catch(err: any){
             if(err)

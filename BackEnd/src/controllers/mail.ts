@@ -38,6 +38,24 @@ export const inbox = async(req: Request, res: Response) => {
     }
     catch(err){
         console.log('GetInbox-Error: ',err);
-        res.status(500).json({error: err, message: "something went wrong while fetchin the inbox"});
+        res.status(500).json({error: err, message: "something went wrong while fetching the inbox"});
+    }
+}
+
+export const updateReadStatus = async(req: Request, res: Response) => {
+    try{
+        const { user } = req.body;
+        const mailId = req.params.id;
+
+        const mail = await mailModel.findOne({_id: mailId});
+        if(mail){
+            mail.isRead = true;
+            await mail.save();
+        }
+        res.status(200).json({status: 200, message: 'mail status updated to read'});
+    }
+    catch(err){
+        console.log('updateReadStatus-Error: ',err);
+        res.status(500).json({error: err, message: "something went wrong while updating the read status"});
     }
 }

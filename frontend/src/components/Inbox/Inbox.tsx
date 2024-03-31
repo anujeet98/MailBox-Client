@@ -3,6 +3,9 @@ import React, { useEffect, useState } from 'react';
 import { Container } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import InboxItem from './InboxItem';
+import DisplayMail from './DisplayMail';
+import { useDispatch } from 'react-redux';
+import { getInboxThunk } from '../../store/inboxSlice';
 interface AuthRes {
     email: string,
     idToken: string,
@@ -29,26 +32,37 @@ interface inboxResult{
     status: number,
     mails: Array<mailObj>
 }
+interface inboxState {
+    inbox: {
+        mails: Array<mailObj>
+    }
+  }
 
 
 function Inbox() {
-    const [mails, setMails] = useState<null | Array<mailObj>>(null);
+    const mails = useSelector((state: inboxState) => state.inbox.mails)
+    // const [mails, setMails] = useState<null | Array<mailObj>>(null);
+    const [showMail, setShowMail] = useState<boolean>(false);
     const token = useSelector((state: AuthState) => state.auth.token);
+    const [displayMail_ID, setDisplayMail_ID] = useState<null | string>(null); 
+    const dispatch = useDispatch<any>();
+    function selectMailToDisplay(id: string){
+        setDisplayMail_ID(id);
+        setShowMail(true);
+    }
+
     useEffect(()=>{
-        const getInbox = async() => {
+        (async()=>{
             try{
-                const res: AxiosResponse<inboxResult> = await axios.get('http://localhost:4000/mail/inbox',{
-                    headers: {
-                        'Authorization': token
-                    }
-                });
-                setMails(res.data.mails);
+                if(token){
+                    await dispatch(getInboxThunk(token));
+                }
             }
             catch(err: any){
-                alert(`Error-${err.response.data.message}`);
+                console.log(err);
+                alert(`Error-${err?.response?.data?.message}`);
             }
-        };
-        getInbox();
+        })();
     },[]);
 
     if(mails===null)
@@ -57,12 +71,22 @@ function Inbox() {
                 LOADING...
             </Container>
         );
+    
+    if(showMail){
+        const mailParams = mails.find(mail=>mail._id === displayMail_ID);
+        if(mailParams)
+            return <DisplayMail data={mailParams} onSelectBack={()=>{
+                setDisplayMail_ID(null);
+                setShowMail(false);
+            }}/>
+    }
 
     return (
         <Container fluid className='d-flex p-0 min-vh-100 mt-3'>
             <ul className='list-unstyled w-100 '>
                 {
-                    mails.map(mail => <InboxItem data={mail}/>)}
+                    mails.map(mail => <InboxItem data={mail} onSelectMail={()=>selectMailToDisplay(mail._id)}/>)
+                }
             </ul>
         </Container>
     )
