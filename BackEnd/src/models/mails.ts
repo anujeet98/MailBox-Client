@@ -6,6 +6,7 @@ interface Mail{
     sender: String,
     subject: String,
     body: String,
+    isRead: Boolean,
     createdDate: Date,
     updatedDate: Date,
 }
@@ -26,6 +27,11 @@ const MailSchema = new Schema<Mail>({
     body:{
         type: String,
         require: true,
+    },
+    isRead: {
+        type: Boolean,
+        require: true,
+        default: false,
     },
     createdDate: {
         type: Date,

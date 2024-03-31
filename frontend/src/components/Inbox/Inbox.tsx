@@ -21,6 +21,7 @@ interface mailObj {
     sender: string,
     subject: string,
     body: string,
+    isRead: boolean,
     createdDate: string,
     updatedDate: string,
 }
@@ -36,7 +37,6 @@ function Inbox() {
     useEffect(()=>{
         const getInbox = async() => {
             try{
-                console.log(token);
                 const res: AxiosResponse<inboxResult> = await axios.get('http://localhost:4000/mail/inbox',{
                     headers: {
                         'Authorization': token
@@ -59,7 +59,7 @@ function Inbox() {
         );
 
     return (
-        <Container fluid className='d-flex p-0 min-vh-100 '>
+        <Container fluid className='d-flex p-0 min-vh-100 mt-3'>
             <ul className='list-unstyled w-100 '>
                 {
                     mails.map(mail => <InboxItem data={mail}/>)}
