@@ -12,15 +12,15 @@ interface mailObj {
   createdDate: string,
   updatedDate: string,
 }
-interface inboxState {
-  inbox: {
+interface mailBoxState {
+  mailbox: {
       mails: Array<mailObj>
   }
 }
 
 
 function SideNav() {
-  const mails = useSelector((state: inboxState) => state.inbox.mails);
+  const mails = useSelector((state: mailBoxState) => state.mailbox.mails);
   const unreadCount = mails.filter(mail => mail.isRead===false).length;
   return (
     <Navbar className="p-0 m-0 bg-secondary-subtle mh-100 fs-5 d-flex flex-column pt-5" style={{width: '20rem'}}>
@@ -28,6 +28,7 @@ function SideNav() {
             <Nav className="d-flex flex-column align-items-start mt-3 w-100 p-3">
                 <NavLink to={"/home/compose"} className='text-decoration-none link-dark w-100'>Compose</NavLink>
                 <NavLink to={"/home/inbox"} className='text-decoration-none link-dark d-flex align-items-baseline justify-content-between  w-100 ' ><span>Inbox</span> <span className=' fs-6 '>{unreadCount} Unread</span></NavLink>
+                <NavLink to={"/home/sent"} className='text-decoration-none link-dark w-100'>Sent</NavLink>
             </Nav>
     </Navbar>
   )

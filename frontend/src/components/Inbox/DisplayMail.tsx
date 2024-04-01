@@ -1,6 +1,6 @@
 import React, { EventHandler } from 'react'
 import { Container, Button } from 'react-bootstrap';
-import { deleteInboxMailThunk } from '../../store/inboxSlice';
+import { deleteMailboxThunk } from '../../store/mailboxSlice';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 type OnSelectBack = () => void;
@@ -16,6 +16,7 @@ interface mailObj {
 }
 interface displayMailProps{
     data: mailObj,
+    mailboxType: string,
     onSelectBack: OnSelectBack,
 }
 interface AuthRes {
@@ -38,7 +39,7 @@ function DisplayMail(props: displayMailProps) {
             (async ()=>{
                 try{
                     if(token){
-                        await dispatch(deleteInboxMailThunk(token, props.data._id));
+                        await dispatch(deleteMailboxThunk(token, props.data._id, props.mailboxType));
                         alert('Email deleted successfully');
                     }
                 }

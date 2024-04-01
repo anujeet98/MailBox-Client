@@ -2,8 +2,8 @@ import axios, { AxiosResponse } from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Container } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
-import { MailboxItem } from './MailboxItem';
-import DisplayMail from './DisplayMail';
+import MailboxItem from '../Inbox/MailboxItem';
+import DisplayMail from '../Inbox/DisplayMail';
 import { useDispatch } from 'react-redux';
 import { getMailThunk } from '../../store/mailboxSlice';
 interface AuthRes {
@@ -28,7 +28,7 @@ interface mailObj {
     createdDate: string,
     updatedDate: string,
 }
-interface mailBoxResult{
+interface inboxResult{
     status: number,
     mails: Array<mailObj>
 }
@@ -40,9 +40,8 @@ interface mailboxState {
   }
 
 
-function Inbox() {
-    const mails = useSelector((state: mailboxState) => state.mailbox.inbox)
-    // const [mails, setMails] = useState<null | Array<mailObj>>(null);
+function Sent() {
+    const mails = useSelector((state: mailboxState) => state.mailbox.sentMails)
     const [showMail, setShowMail] = useState<boolean>(false);
     const token = useSelector((state: AuthState) => state.auth.token);
     const [displayMail_ID, setDisplayMail_ID] = useState<null | string>(null); 
@@ -56,7 +55,7 @@ function Inbox() {
         (async()=>{
             try{
                 if(token){
-                    await dispatch(getMailThunk(token, 'inbox'));
+                    await dispatch(getMailThunk(token, 'sent'));
                 }
             }
             catch(err: any){
@@ -76,7 +75,7 @@ function Inbox() {
     if(showMail){
         const mailParams = mails.find(mail=>mail._id === displayMail_ID);
         if(mailParams)
-            return <DisplayMail data={mailParams} mailboxType="inbox" onSelectBack={()=>{
+            return <DisplayMail data={mailParams} mailboxType="sent" onSelectBack={()=>{
                 setDisplayMail_ID(null);
                 setShowMail(false);
             }}/>
@@ -93,4 +92,4 @@ function Inbox() {
     )
 }
 
-export default Inbox
+export default Sent

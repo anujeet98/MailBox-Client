@@ -1,6 +1,6 @@
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
-import { readStatusUpdateThunk } from '../../store/inboxSlice';
+import { readStatusUpdateThunk } from '../../store/mailboxSlice';
 interface mailObj {
     _id: string,
     recipient: string,
@@ -30,7 +30,7 @@ interface AuthState {
 
 
 
-function InboxItem(props: inboxItemProps) {
+function MailboxItem(props: inboxItemProps) {
     const token = useSelector((state: AuthState) => state.auth.token);
     const emailDate: Date = new Date(props.data.createdDate);
     const isRead: boolean = props.data.isRead;
@@ -65,4 +65,4 @@ function InboxItem(props: inboxItemProps) {
     )
 }
 
-export default InboxItem
+export default MailboxItem
