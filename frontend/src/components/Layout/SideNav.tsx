@@ -14,13 +14,14 @@ interface mailObj {
 }
 interface mailBoxState {
   mailbox: {
-      mails: Array<mailObj>
+      inbox: Array<mailObj>,
+      sentMails: Array<mailObj>
   }
 }
 
 
 function SideNav() {
-  const mails = useSelector((state: mailBoxState) => state.mailbox.mails);
+  const mails = useSelector((state: mailBoxState) => state.mailbox.inbox);
   const unreadCount = mails.filter(mail => mail.isRead===false).length;
   return (
     <Navbar className="p-0 m-0 bg-secondary-subtle mh-100 fs-5 d-flex flex-column pt-5" style={{width: '20rem'}}>

@@ -80,7 +80,6 @@ function Sent() {
                 setShowMail(false);
             }}/>
     }
-
     return (
         <Container fluid className='d-flex p-0 min-vh-100 mt-3'>
             <ul className='list-unstyled w-100 '>

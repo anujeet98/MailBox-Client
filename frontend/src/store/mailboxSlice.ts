@@ -81,9 +81,9 @@ export const getMailThunk = (token: string, mailboxType: string) => {
                 }
             });
             if(mailboxType==='sent')
-                dispatch(setInbox(res.data.mails));
-            else
                 dispatch(setSentMails(res.data.mails));
+            else
+                dispatch(setInbox(res.data.mails));
         }
         catch(err: any){
             throw err;

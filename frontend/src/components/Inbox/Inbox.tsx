@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Container } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
-import { MailboxItem } from './MailboxItem';
+import MailboxItem from './MailboxItem';
 import DisplayMail from './DisplayMail';
 import { useDispatch } from 'react-redux';
 import { getMailThunk } from '../../store/mailboxSlice';
@@ -53,7 +53,7 @@ function Inbox() {
     }
 
     useEffect(()=>{
-        (async()=>{
+        const getInboxMails = async()=>{
             try{
                 if(token){
                     await dispatch(getMailThunk(token, 'inbox'));
@@ -63,7 +63,8 @@ function Inbox() {
                 console.log(err);
                 alert(`Error-${err?.response?.data?.message}`);
             }
-        })();
+        }
+        setInterval(()=>getInboxMails(),2000);
     },[]);
 
     if(mails===null)

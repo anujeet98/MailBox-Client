@@ -48,7 +48,7 @@ export const sentbox = async(req: Request, res: Response) => {
     try{
         const { user } = req.body;
 
-        const resp = await sentboxModel.find({recipient: user.email});
+        const resp = await sentboxModel.find({sender: user.email});
         res.status(200).json({status: 200, mails: resp});
     }
     catch(err){

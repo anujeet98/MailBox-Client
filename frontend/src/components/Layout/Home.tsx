@@ -1,7 +1,7 @@
 import { Container } from 'react-bootstrap';
 import Compose from '../Compose/Compose';
 import SideNav from './SideNav';
-import { Route, Routes } from 'react-router';
+import { Navigate, Route, Routes,  } from 'react-router';
 import Inbox from '../Inbox/Inbox';
 import Sent from '../Sent/Sent';
 
@@ -14,6 +14,7 @@ function Home() {
 					<Route path={'/compose' } element={<Compose />} />
 					<Route path={'/inbox' } element={<Inbox />} />
 					<Route path={'/sent' } element={<Sent />} />
+					<Route path="*" element={<Navigate to="/auth" replace />} />
 				</Routes>
 			</Container>
 		</Container>
